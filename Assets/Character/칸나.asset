@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86da1c3804ab30c42bfc4276123f1d92, type: 3}
+  m_Name: "\uCE78\uB098"
+  m_EditorClassIdentifier: BattleSystem::CharacterData
+  characterID: 008
+  characterName: "\uCE78\uB098"
+  iconSprite: {fileID: 2717945861770853947, guid: d64c345e6799e68498442dc5e80666ba, type: 3}
+  portraitSprite: {fileID: 6210920046156542852, guid: 0aed49a05e00e4f48886d5c3a6cdd847, type: 3}
+  elementType: 3
+  positionRow: 2
+  unitRole: 1
+  attackType: 0
+  maxHP: 21522
+  currentHP: 0
+  maxSP: 370
+  currentSP: 0
+  physical_Attack_Power: 2394
+  physical_Defence_Power: 3672
+  magical_Attack_Power: 0
+  magical_Defence_Power: 2557
+  critical_Probability: 50
+  critical_Multiplier: 1

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3353094c27599ac4bb330f7cfc66f427, type: 3}
+  m_Name: Komi_Normal_Data
+  m_EditorClassIdentifier: BattleSystem::SkillData
+  skillName: "\uC77C\uBC18 \uACF5\uACA9"
+  description: "\uBCA0\uAC1C\uB97C \uB0B4\uB824\uCCD0 \uC801\uC5D0\uAC8C \uBB3C\uB9AC
+    \uD53C\uD574\uB97C \uC785\uD78C\uB2E4.\n\uAC15\uD654\uC2DC \uC77C\uC815 \uD655\uB960\uB85C
+    \uBCA0\uAC1C\uB97C \uAC15\uD558\uAC8C \uB0B4\uB824\uCCD0 \uC801\uC5D0\uAC8C \uBB3C\uB9AC
+    \uD53C\uD574\uB97C \uC785\uD788\uACE0 \uAE30\uC808(\uBBF8\uAD6C\uD604)\uC744
+    \uAC74\uB2E4."
+  damageMultiplier: 1
+  skillValue: 0
+  duration: 0
+  skillAction: {fileID: 11400000, guid: d559a3511b55ef243b667ff5ac83c9ea, type: 2}
