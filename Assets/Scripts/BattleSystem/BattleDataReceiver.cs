@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using static BattleEnums;
 
@@ -10,7 +12,8 @@ public class BattleDataReceiver : MonoBehaviour
     public CharacterData[] frontLine = new CharacterData[3];
     public CharacterData[] middleLine = new CharacterData[3];
     public CharacterData[] backLine = new CharacterData[3];
-
+    public List<CharacterData> allCharacters = new List<CharacterData>();
+    public List<Battle_Character> allBattleCharacters = new List<Battle_Character>();
     private void Awake()
     {
         if (Instance == null)
@@ -31,5 +34,25 @@ public class BattleDataReceiver : MonoBehaviour
         frontLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Front).placedCharacters.Clone();
         middleLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Mid).placedCharacters.Clone();
         backLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Back).placedCharacters.Clone();
+
+        allCharacters.Clear(); // 혹시 이전 데이터가 남아있을 수 있으니 깔끔하게 비워줍니다.
+
+        AddCharactersFromLine(frontLine);
+        AddCharactersFromLine(middleLine);
+        AddCharactersFromLine(backLine);
+    }
+
+    private void AddCharactersFromLine(CharacterData[] line)
+    {
+        if (line == null) return;
+
+        for (int i = 0; i < line.Length; i++)
+        {
+            // 슬롯이 비어있을 수도 있으므로(3명 꽉 안 채우고 출전하는 경우), null이 아닐 때만 리스트에 넣습니다.
+            if (line[i] != null)
+            {
+                allCharacters.Add(line[i]);
+            }
+        }
     }
 }

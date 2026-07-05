@@ -6,26 +6,35 @@ using static Codice.CM.Common.CmCallContext;
 
 public class Battle_Character : MonoBehaviour
 {
-    [SerializeField]  private CharacterData myData;
-    public CharacterState currentState = CharacterState.Idle;
+    [SerializeField] private CharacterData myData;
+    public CharacterData MyData => myData;
+    [SerializeField] public CharacterState currentState = CharacterState.Idle;
     public enum CharacterState
     {
-        Idle,           // ´ë±â
-        Move,           // ÀûÀ» ÇâÇØ ÀÌµ¿
-        NormalAttack,   // ÆòÅ¸ ½ÃÀü Áß
-        SkillCasting,   // ¼­ºê/EX ½ºÅ³ ½ÃÀü Áß
-        Stunned,        // ±âÀı/Á¦¾î ºÒ´É
-        Dead            // »ç¸Á
+        Idle,           // ëŒ€ê¸°
+        Move,           // ì ì„ í–¥í•´ ì´ë™
+        NormalAttack,   // í‰íƒ€ ì‹œì „ ì¤‘
+        SkillCasting,   // ì„œë¸Œ/EX ìŠ¤í‚¬ ì‹œì „ ì¤‘
+        Stunned,        // ê¸°ì ˆ/ì œì–´ ë¶ˆëŠ¥
+        Dead            // ì‚¬ë§
     }
 
-    [Header("HP/SP ¹Ù")]
-    [SerializeField]private Slider hpSlider;
-    [SerializeField]private Slider spSlider;
+    [Header("SpriteRenderer")]
+    [SerializeField] public SpriteRenderer sr;
+    [Header("HP/SP ë°”")]
+    [SerializeField] private Slider hpSlider;
+    [SerializeField] private Slider spSlider;
 
 
-    [Header("ÀüÅõ ½Ç½Ã°£ »óÅÂ")]
+    [Header("ì „íˆ¬ ì‹¤ì‹œê°„ ìƒíƒœ")]
     public float currentHp;
-    public float attackCooldown = 1.5f; // ÆòÅ¸ ÁÖ±â (ÃÊ)
+    public float currentSp;
+    public float attackCooldown = 1.5f; // í‰íƒ€ ì£¼ê¸° (ì´ˆ)
+    public float regenSP;
+    public int attack_Power;
+    public int defence_Power;
+    public int critical_Probability;
+    public int critical_Multiplier;
     private float lastAttackTime;
 
 
@@ -35,86 +44,123 @@ public class Battle_Character : MonoBehaviour
 
     SpriteRenderer spriteRenderer;
     Battle_Character currentTarget;
-    
+    Rigidbody2D rb;
+    public float moveSpeed = 1.2f;
     private bool isSPRegenStart = false;
+    public float distance = 0;
     private Coroutine spRegenCoroutine;
 
-    // BattleManager°¡ ¼ÒÈ¯ ÈÄ µ¥ÀÌÅÍ¸¦ ³Ö¾îÁÖ´Â ÇÔ¼ö
-    public void Init(CharacterData data)
+    // BattleManagerê°€ ì†Œí™˜ í›„ ë°ì´í„°ë¥¼ ë„£ì–´ì£¼ëŠ” í•¨ìˆ˜
+    public void Init(CharacterData data, bool flip)
     {
         myData = data;
         currentHp = data.maxHP;
-        data.currentSP = 0;
-        // ¼ÒÈ¯µÇÀÚ¸¶ÀÚ ¹Ù·Î ¶§¸®´Â °É ¹æÁöÇÏ±â À§ÇØ ·£´ı µô·¹ÀÌ¸¦ »ìÂ¦ Áİ´Ï´Ù.
+        rb = GetComponent<Rigidbody2D>();
+        currentSp = 0;
+        // ì†Œí™˜ë˜ìë§ˆì ë°”ë¡œ ë•Œë¦¬ëŠ” ê±¸ ë°©ì§€í•˜ê¸° ìœ„í•´ ëœë¤ ë”œë ˆì´ë¥¼ ì‚´ì§ ì¤ë‹ˆë‹¤.
         lastAttackTime = Time.time + Random.Range(0f, 0.5f);
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = myData.portraitSprite;
-        spriteRenderer.flipX = true;
-        spriteRenderer.sortingOrder = 1;
-        spriteRenderer.transform.localPosition = new Vector3(-0.65f, 5.9f, 0f);
-        spriteRenderer.transform.localRotation = Quaternion.identity;
-        spriteRenderer.transform.localScale = new Vector3(7.0f, 7.0f, 1f);
-
+        sr.sprite = myData.portraitSprite;
+        sr.flipX = flip;
+        sr.sortingOrder = 1;
+        sr.transform.localPosition = new Vector3(-0.65f, 5.9f, 0f);
+        sr.transform.localRotation = Quaternion.identity;
+        sr.transform.localScale = new Vector3(7.0f, 7.0f, 1f);
 
         if (hpSlider != null)
         {
             hpSlider.maxValue = data.maxHP;
             hpSlider.value = currentHp;
         }
-        if(spSlider != null)
+        if (spSlider != null)
         {
             spSlider.maxValue = data.maxSP;
-            spSlider.value = myData.currentSP;
+            spSlider.value = currentSp;
         }
-    }
+
+
+
+        regenSP = myData.regenSP;
+        attack_Power = myData.attack_Power;
+        defence_Power = myData.defence_Power;
+        critical_Probability = myData.critical_Probability;
+        critical_Multiplier = myData.critical_Multiplier;
+}
 
     private void Update()
     {
         if (currentState == CharacterState.Dead) return;
-
-        if (myData.currentSP >= myData.maxSP && currentState != CharacterState.SkillCasting && currentState != CharacterState.Stunned)
+        
+        if (currentSp >= myData.maxSP && currentState != CharacterState.SkillCasting && currentState != CharacterState.Stunned)
         {
             ChangeState(CharacterState.SkillCasting);
         }
 
         if (spSlider != null)
         {
-            spSlider.value = myData.currentSP;
+            spSlider.value = currentSp;
         }
-        // ¡Ú ÇöÀç »óÅÂ¿¡ µû¶ó ±â°èÀûÀ¸·Î µü ÀÚ±â ÇÒ ÀÏ¸¸ ½ÃÅµ´Ï´Ù!
+        // â˜… í˜„ì¬ ìƒíƒœì— ë”°ë¼ ê¸°ê³„ì ìœ¼ë¡œ ë”± ìê¸° í•  ì¼ë§Œ ì‹œí‚µë‹ˆë‹¤!
         switch (currentState)
         {
             case CharacterState.Idle:
-                // ÀûÀÌ ÀÖ´ÂÁö Å½»öÇÏ°í, »ç°Å¸®¸¦ Ã¼Å©ÇØ¼­ ÀÌµ¿ÇÒÁö °ø°İÇÒÁö °áÁ¤
+                // ì ì´ ìˆëŠ”ì§€ íƒìƒ‰í•˜ê³ , ì‚¬ê±°ë¦¬ë¥¼ ì²´í¬í•´ì„œ ì´ë™í• ì§€ ê³µê²©í• ì§€ ê²°ì •
                 currentTarget = FindTarget();
+                if (currentTarget != null)
+                {
+                    distance = Vector3.Distance(transform.position, currentTarget.transform.position);
+                    if (distance > myData.attackRange)
+                    {
+                        ChangeState(CharacterState.Move);
+                    }
+                    else
+                    {
+                        
+                        ChangeState(CharacterState.NormalAttack);
+                    }
+                    //Move(); íƒìƒ‰í•´ì„œ ì ì´ ì—†ì„ê²½ìš° ì´ë™
+                    //ChangeState(CharacterState.Move);
+                    //ì  ì „ë©¸ ë°°í‹€ì¢…ë£Œ
+                }
+
+                /*currentTarget = FindTarget();
                 if (currentTarget == null)
                 {
-                    //Move(); Å½»öÇØ¼­ ÀûÀÌ ¾øÀ»°æ¿ì ÀÌµ¿
-                    ChangeState(CharacterState.Move);
+                    //Move(); íƒìƒ‰í•´ì„œ ì ì´ ì—†ì„ê²½ìš° ì´ë™
+                    //ChangeState(CharacterState.Move);
+                    //ì  ì „ë©¸ ë°°í‹€ì¢…ë£Œ
                 }
                 else
                 {
-                    if(isSPRegenStart == false)
+
+                    if(distance > myData.attackRange)
+                    {
+                        ChangeState(CharacterState.Move);
+                    }
+                    else 
+                    {
+                        ChangeState(CharacterState.NormalAttack);
+                    }
+                    if (isSPRegenStart == false)
                     {
                         spRegenCoroutine = StartCoroutine(RegenSPRoutine());
                         isSPRegenStart = true;
                     }
                     ChangeState(CharacterState.NormalAttack);
 
-                }
+                }*/
 
                 break;
 
             case CharacterState.Move:
-                // ÀûÀ» ÇâÇØ ½Ç½Ã°£À¸·Î °É¾î°¡´Â ·ÎÁ÷
-                StopCoroutine(spRegenCoroutine);
-                spRegenCoroutine = null;
+                // ì ì„ í–¥í•´ ì‹¤ì‹œê°„ìœ¼ë¡œ ê±¸ì–´ê°€ëŠ” ë¡œì§
+                //SPì  ì„ ë©ˆì¶”ê³ 
+                if( spRegenCoroutine != null)
+                {
+                    StopCoroutine(spRegenCoroutine);
+                    spRegenCoroutine = null;
+                    isSPRegenStart = false;
+                }
 
-
-                break;
-
-            case CharacterState.NormalAttack:
-                // ÆòÅ¸ ¸ğ¼ÇÀÌ ³¡³¯ ¶§±îÁö ´ë±â (Å¸ÀÌ¸Ó´Â ¿©±â¼­¸¸ ÀÛµ¿!)
 
                 if (currentTarget == null || currentTarget.currentState == CharacterState.Dead)
                 {
@@ -122,6 +168,35 @@ public class Battle_Character : MonoBehaviour
                     break;
                 }
 
+                distance = Vector3.Distance(transform.position, currentTarget.transform.position);
+                if (distance <= myData.attackRange)
+                {
+                    ChangeState(CharacterState.NormalAttack);
+                }
+                else
+                {
+                    // Vector3.MoveTowards(í˜„ì¬ìœ„ì¹˜, ëª©í‘œìœ„ì¹˜, ë§¤ í”„ë ˆì„ ì´ë™í•  ê±°ë¦¬)
+                    transform.position = Vector3.MoveTowards(transform.position, currentTarget.transform.position, moveSpeed * Time.deltaTime);
+
+                    // ê±·ê¸° ì• ë‹ˆë©”ì´ì…˜ ì¼œê¸° ì˜ˆì‹œ:
+                    // GetComponent<Animator>().SetBool("IsMoving", true);
+                }
+                break;
+
+
+            case CharacterState.NormalAttack:
+                // í‰íƒ€ ëª¨ì…˜ì´ ëë‚  ë•Œê¹Œì§€ ëŒ€ê¸° (íƒ€ì´ë¨¸ëŠ” ì—¬ê¸°ì„œë§Œ ì‘ë™!)
+                if (isSPRegenStart == false)
+                {
+                    spRegenCoroutine = StartCoroutine(RegenSPRoutine());
+                    isSPRegenStart = true;
+                }
+
+                if (currentTarget == null || currentTarget.currentState == CharacterState.Dead)
+                {
+                    ChangeState(CharacterState.Idle);
+                    break;
+                }
                 if (Time.time - lastAttackTime >= attackCooldown)
                 {
                     NormalAttack(currentTarget);
@@ -129,32 +204,34 @@ public class Battle_Character : MonoBehaviour
                 break;
 
             case CharacterState.SkillCasting:
-                // ½ºÅ³ ½ÃÀü Áß¿¡´Â ¾Æ¹«°Íµµ ¾È ÇÏ°í °¡¸¸È÷ ¿¬Ãâ¸¸ ´ë±â (ÆòÅ¸ Â÷´Ü ¿Ïº® ±¸Çö!)
-                LowerGrade(); // ÀúÇĞ³â½ºÅ³¹ßµ¿
+                // ìŠ¤í‚¬ ì‹œì „ ì¤‘ì—ëŠ” ì•„ë¬´ê²ƒë„ ì•ˆ í•˜ê³  ê°€ë§Œíˆ ì—°ì¶œë§Œ ëŒ€ê¸° (í‰íƒ€ ì°¨ë‹¨ ì™„ë²½ êµ¬í˜„!)
+                LowerGrade(); // ì €í•™ë…„ìŠ¤í‚¬ë°œë™
                 break;
 
             case CharacterState.Stunned:
 
                 StopCoroutine(spRegenCoroutine);
                 spRegenCoroutine = null;
-                // ±âÀı »óÅÂÀÏ ¶§´Â Å¸ÀÌ¸Ó°í ÀÌµ¿ÀÌ°í ÀüºÎ ¿Ã½ºÅé
+                isSPRegenStart = false;
+
+                // ê¸°ì ˆ ìƒíƒœì¼ ë•ŒëŠ” íƒ€ì´ë¨¸ê³  ì´ë™ì´ê³  ì „ë¶€ ì˜¬ìŠ¤í†±
                 break;
         }
     }
     public void ChangeState(CharacterState newState)
     {
-        if (currentState == CharacterState.Dead) return; // Á×Àº ÀÚ´Â »óÅÂ¸¦ ¹Ù²Ü ¼ö ¾ø´Ù.
+        if (currentState == CharacterState.Dead) return; // ì£½ì€ ìëŠ” ìƒíƒœë¥¼ ë°”ê¿€ ìˆ˜ ì—†ë‹¤.
 
         currentState = newState;
 
-        // »óÅÂ°¡ ¹Ù²ğ ¶§ ÃÖÃÊ 1¹ø ½ÇÇàµÇ¾î¾ß ÇÏ´Â ·ÎÁ÷µé Ã³¸®
+        // ìƒíƒœê°€ ë°”ë€” ë•Œ ìµœì´ˆ 1ë²ˆ ì‹¤í–‰ë˜ì–´ì•¼ í•˜ëŠ” ë¡œì§ë“¤ ì²˜ë¦¬
         switch (newState)
         {
             case CharacterState.SkillCasting:
-                // ¾Ö´Ï¸ŞÀÌÅÍ¿¡ ½ºÅ³ Æ®¸®°Å ÄÑ±â µî
+                // ì• ë‹ˆë©”ì´í„°ì— ìŠ¤í‚¬ íŠ¸ë¦¬ê±° ì¼œê¸° ë“±
                 break;
             case CharacterState.Dead:
-                // Äİ¶óÀÌ´õ ²ô°í »ç¸Á ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı µî
+                // ì½œë¼ì´ë” ë„ê³  ì‚¬ë§ ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ ë“±
                 break;
         }
     }
@@ -165,20 +242,14 @@ public class Battle_Character : MonoBehaviour
         {
             yield return new WaitForSeconds(1.0f);
 
-            if (myData.currentSP < myData.maxSP)
+            if (currentSp < myData.maxSP)
             {
-                myData.currentSP += myData.regenSP;
-                if (myData.currentSP > myData.maxSP) myData.currentSP = myData.maxSP;
+                currentSp += myData.regenSP;
+                if (currentSp > myData.maxSP) currentSp = myData.maxSP;
 
-                Debug.Log($"{gameObject.name} SP È¸º¹ Áß: {myData.currentSP}");
             }
         }
     }
-
-
-
-
-
 
 
     private void NormalAttack(Battle_Character currentTarget)
@@ -187,71 +258,70 @@ public class Battle_Character : MonoBehaviour
         {
             lastAttackTime = Time.time;
 
-            // °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç Æ®¸®°Å (°ø°İ ¸ğ¼Ç Àç»ı)
+            // ê³µê²© ì• ë‹ˆë©”ì´ì…˜ íŠ¸ë¦¬ê±° (ê³µê²© ëª¨ì…˜ ì¬ìƒ)
             // GetComponent<Animator>().SetTrigger("Attack");
             myData.normalAttack.skillAction.ExecuteSkill(this, currentTarget);
-            Debug.Log($"{myData.characterName}ÀÇ ÀÚµ¿ ÆòÅ¸! Àû¿¡°Ô µ¥¹ÌÁö.");
 
         }
     }
 
-    
-    private Battle_Character FindTarget()
+
+    public Battle_Character FindTarget()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         Battle_Character closestEnemy = null;
-        float closestDistance = Mathf.Infinity; // ºñ±³¸¦ À§ÇØ Ã³À½¿£ ¹«ÇÑ´ë °ªÀ¸·Î ¼³Á¤
+        float closestDistance = Mathf.Infinity; // ë¹„êµë¥¼ ìœ„í•´ ì²˜ìŒì—” ë¬´í•œëŒ€ ê°’ìœ¼ë¡œ ì„¤ì •
         Vector3 currentPosition = transform.position;
 
         foreach (GameObject enemy in enemies)
         {
             Battle_Character enemyChar = enemy.GetComponent<Battle_Character>();
 
-            // »ì¾ÆÀÖ´Â Àû¸¸ °Ë»ç
+            // ì‚´ì•„ìˆëŠ” ì ë§Œ ê²€ì‚¬
             if (enemyChar != null && enemyChar.currentState != CharacterState.Dead)
             {
-                // ³ª¿Í ÀÌ Àû »çÀÌÀÇ °Å¸®¸¦ °è»ê (Á¦°ö °Å¸®¸¦ ¾²¸é ·çÆ® °è»êÀÌ ºüÁ®¼­ ¼º´É¿¡ ´õ ÁÁ½À´Ï´Ù)
+                // ë‚˜ì™€ ì´ ì  ì‚¬ì´ì˜ ê±°ë¦¬ë¥¼ ê³„ì‚° (ì œê³± ê±°ë¦¬ë¥¼ ì“°ë©´ ë£¨íŠ¸ ê³„ì‚°ì´ ë¹ ì ¸ì„œ ì„±ëŠ¥ì— ë” ì¢‹ìŠµë‹ˆë‹¤)
                 float distanceToEnemy = (enemy.transform.position - currentPosition).sqrMagnitude;
-
-                // ¹æ±İ °Ë»çÇÑ ÀûÀÌ ±âÁ¸¿¡ Ã£Àº Àûº¸´Ù ´õ °¡±õ´Ù¸é?
+                // ë°©ê¸ˆ ê²€ì‚¬í•œ ì ì´ ê¸°ì¡´ì— ì°¾ì€ ì ë³´ë‹¤ ë” ê°€ê¹ë‹¤ë©´?
                 if (distanceToEnemy < closestDistance)
                 {
-                    closestDistance = distanceToEnemy; // °¡Àå ÂªÀº °Å¸® °»½Å
-                    closestEnemy = enemyChar;          // ÀÌ¹ø ³à¼®À» Å¸°ÙÀ¸·Î Âò!
+                    closestDistance = distanceToEnemy; // ê°€ì¥ ì§§ì€ ê±°ë¦¬ ê°±ì‹ 
+                    closestEnemy = enemyChar;          // ì´ë²ˆ ë…€ì„ì„ íƒ€ê²Ÿìœ¼ë¡œ ì°œ!
                 }
             }
         }
 
-        // ÃÖÁ¾ÀûÀ¸·Î °¡Àå °¡±î¿î Àû(¾øÀ¸¸é null)À» ¹İÈ¯ÇÕ´Ï´Ù.
+        // ìµœì¢…ì ìœ¼ë¡œ ê°€ì¥ ê°€ê¹Œìš´ ì (ì—†ìœ¼ë©´ null)ì„ ë°˜í™˜í•©ë‹ˆë‹¤.
         return closestEnemy;
     }
 
 
-    // EX ½ºÅ³ ¹ßµ¿ ÇÔ¼ö (¿ÜºÎ UI ¹öÆ°¿¡¼­ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÒ °Ì´Ï´Ù)
+    // EX ìŠ¤í‚¬ ë°œë™ í•¨ìˆ˜ (ì™¸ë¶€ UI ë²„íŠ¼ì—ì„œ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•  ê²ë‹ˆë‹¤)
     public void LowerGrade()
     {
         if (currentState == CharacterState.Dead) return;
         StopCoroutine(RegenSPRoutine());
-        myData.currentSP = 0;
-        myData.lowerSkill.skillAction.ExecuteSkill(this,currentTarget);
-        Debug.Log($" {myData.characterName}ÀÇ ÀúÇĞ³â ½ºÅ³ ¹ßµ¿!");
-        // ¿©±â¿¡ ÀüÃ¼ ±¤¿ª±â³ª Èú, Æ¯¼ö ¾Ö´Ï¸ŞÀÌ¼Ç ·ÎÁ÷ ¹èÄ¡
+        currentSp = 0;
+        spRegenCoroutine = null;
+        isSPRegenStart = false;
+        myData.lowerSkill.skillAction.ExecuteSkill(this, currentTarget);
+        Debug.Log($" {myData.characterName}ì˜ ì €í•™ë…„ ìŠ¤í‚¬ ë°œë™!");
+        // ì—¬ê¸°ì— ì „ì²´ ê´‘ì—­ê¸°ë‚˜ í, íŠ¹ìˆ˜ ì• ë‹ˆë©”ì´ì…˜ ë¡œì§ ë°°ì¹˜
     }
 
     public void UpperGrade()
     {
         if (currentState == CharacterState.Dead) return;
+        Debug.Log($" {myData.characterName}ì˜ ê³ í•™ë…„ ìŠ¤í‚¬ ë°œë™!");
         myData.upperSkill.skillAction.ExecuteSkill(this, currentTarget);
-        Debug.Log($" {myData.characterName}ÀÇ °íÇĞ³â ½ºÅ³ ¹ßµ¿!");
-        // ¿©±â¿¡ ÀüÃ¼ ±¤¿ª±â³ª Èú, Æ¯¼ö ¾Ö´Ï¸ŞÀÌ¼Ç ·ÎÁ÷ ¹èÄ¡
+        // ì—¬ê¸°ì— ì „ì²´ ê´‘ì—­ê¸°ë‚˜ í, íŠ¹ìˆ˜ ì• ë‹ˆë©”ì´ì…˜ ë¡œì§ ë°°ì¹˜
     }
 
     public void TakeDamage(float damage)
     {
         if (currentState == CharacterState.Dead) return;
         currentHp -= damage;
-        Debug.Log($" ÇöÀç Ã¼·Â : {currentHp} " );
         if (hpSlider != null)
         {
             hpSlider.value = currentHp;
@@ -267,7 +337,8 @@ public class Battle_Character : MonoBehaviour
     private void WeekendFarm()
     {
         ChangeState(CharacterState.Dead);
-        Debug.Log($"{myData.characterName} »ç¸Á...");
-        // »ç¸Á ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ³ª ¿ÀºêÁ§Æ® Ã³¸®
+        GetComponentInChildren<BoxCollider2D>().enabled = false;
+        Debug.Log($"{myData.characterName} ì‚¬ë§...");
+        // ì‚¬ë§ ì• ë‹ˆë©”ì´ì…˜ì´ë‚˜ ì˜¤ë¸Œì íŠ¸ ì²˜ë¦¬
     }
 }

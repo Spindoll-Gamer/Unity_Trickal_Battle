@@ -16,6 +16,7 @@ MonoBehaviour:
   characterName: "\uCE78\uB098"
   iconSprite: {fileID: 2717945861770853947, guid: d64c345e6799e68498442dc5e80666ba, type: 3}
   portraitSprite: {fileID: 6210920046156542852, guid: 0aed49a05e00e4f48886d5c3a6cdd847, type: 3}
+  upperGradeSprite: {fileID: -3095301415874624797, guid: 9c30e137335ee254cad83e2a99939375, type: 3}
   elementType: 3
   positionRow: 2
   unitRole: 1
@@ -24,9 +25,14 @@ MonoBehaviour:
   currentHP: 0
   maxSP: 370
   currentSP: 0
+  regenSP: 0
   physical_Attack_Power: 2394
   physical_Defence_Power: 3672
   magical_Attack_Power: 0
   magical_Defence_Power: 2557
   critical_Probability: 50
   critical_Multiplier: 1
+  attackRange: 0
+  normalAttack: {fileID: 0}
+  lowerSkill: {fileID: 0}
+  upperSkill: {fileID: 0}

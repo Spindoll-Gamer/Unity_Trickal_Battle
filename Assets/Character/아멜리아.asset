@@ -16,6 +16,7 @@ MonoBehaviour:
   characterName: "\uC544\uBA5C\uB9AC\uC544"
   iconSprite: {fileID: 5223226738503622450, guid: 4272f7efbfcb1f449a5c9a11199f5f54, type: 3}
   portraitSprite: {fileID: 1358555401616027865, guid: 81f7e00592049c84585efbebb751c4d3, type: 3}
+  upperGradeSprite: {fileID: -402764179908664510, guid: 46ece172ff6f06d499f9784f97382741, type: 3}
   elementType: 3
   positionRow: 2
   unitRole: 1
@@ -24,9 +25,14 @@ MonoBehaviour:
   currentHP: 0
   maxSP: 370
   currentSP: 0
+  regenSP: 0
   physical_Attack_Power: 2394
   physical_Defence_Power: 3672
   magical_Attack_Power: 0
   magical_Defence_Power: 2557
   critical_Probability: 50
   critical_Multiplier: 1
+  attackRange: 0
+  normalAttack: {fileID: 0}
+  lowerSkill: {fileID: 0}
+  upperSkill: {fileID: 0}

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3353094c27599ac4bb330f7cfc66f427, type: 3}
+  m_Name: Komi_Upper_Data
+  m_EditorClassIdentifier: BattleSystem::SkillData
+  skillName: "\uC5D8\uD504\uC0B0 \uD2B9\uC81C \uC0AC\uB8CC "
+  description: "\uD2B9\uC218\uD55C \uC0AC\uB8CC\uB97C \uBA39\uC5B4 \uC77C\uC815 \uC2DC\uAC04
+    \uB3D9\uC548 \uAC70\uB300\uD654\uD55C\uB2E4. \uCC29\uC9C0 \uC2DC \uCDA9\uACA9\uD30C\uB97C
+    \uC77C\uC73C\uCF1C \uC801\uB4E4\uC5D0\uAC8C \uBC94\uC704 \uBB3C\uB9AC \uD53C\uD574\uB97C
+    \uC785\uD788\uACE0, \uAC70\uB300\uD654 \uC2DC HP\uB97C \uD68C\uBCF5\uD558\uBA70,
+    \uAC70\uB300\uD654 \uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD53C\uD574\uB7C9\uACFC
+    \uACF5\uACA9\uC18D\uB3C4\uAC00 \uC99D\uAC00\uD55C\uB2E4."
+  skillAction: {fileID: 11400000, guid: 3209b37508f79dc42b408cbe135b59ed, type: 2}

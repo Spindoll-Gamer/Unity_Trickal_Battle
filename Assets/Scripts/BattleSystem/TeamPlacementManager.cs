@@ -17,6 +17,7 @@ public class TeamPlacementManager : MonoBehaviour
     [Header("포지션별 슬롯 그룹 설정 (전/중/후 3개 조 생성)")]
     public List<PositionSlotGroup> slotGroups = new List<PositionSlotGroup>();
 
+    
     public int maxCharactersPerLine = 3; // 한 줄당 최대 배치 수
 
     private void Awake()

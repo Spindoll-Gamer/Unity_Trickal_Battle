@@ -9,6 +9,7 @@ public class CharacterData : ScriptableObject
     public string characterName;  // 화면 표시 이름
     public Sprite iconSprite;     // 인벤토리 UI용 아이콘
     public Sprite portraitSprite; // 배치 화면용 일러스트
+    public Sprite upperGradeSprite;
 
     [Header("BattleInfo")]
 
@@ -18,21 +19,21 @@ public class CharacterData : ScriptableObject
     public AttackType attackType;
     
     [Header("Stats")]
-    public int maxHP;
-    public int currentHP;
-    public int maxSP;
-    public int currentSP;
-    public int regenSP;
-    public int physical_Attack_Power;
-    public int physical_Defence_Power;
-    public int magical_Attack_Power;
-    public int magical_Defence_Power;
+    public float maxHP;
+    public float maxSP;
+    public float regenSP;
+    public int attack_Power;
+    public int defence_Power;
     public int critical_Probability;
     public int critical_Multiplier;
+    public float attackRange;
 
     [Header(" 캐릭터별 고유 스킬 설정")]
 
     public SkillData normalAttack;
-    public SkillData lowerSkill; // 인펙터에서 저학년 스킬 SO를 드래그해서 넣는 곳
-    public SkillData upperSkill; // 인
+    public SkillData lowerSkill; 
+    public SkillData upperSkill; 
+
+    [Header("고학년 스킬 쿨타임")]
+    public float cooldownTime;
 }
