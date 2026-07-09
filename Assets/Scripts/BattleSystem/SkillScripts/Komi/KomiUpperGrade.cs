@@ -32,7 +32,9 @@ public class KomiUpperGrade : SkillAction
         // 내 위치(transform.position)를 중심으로 attackRadius 크기의 와이어 원을 그립니다.
         // (공격 범위 변수명인 attackRadius나 attackRange에 맞게 넣어주세요!)
         Debug.Log($" [코미 고학년] ★★★ 거 대 화 변 신 ★★★");
+        caster.ChangeState(Battle_Character.CharacterState.SkillCasting);
         yield return new WaitForSeconds(2f);
+        caster.ChangeState(Battle_Character.CharacterState.Idle);
         // [효과 1] 비주얼 거대화 (스케일을 2배로 뻥튀기)
         if (caster.transform != null) caster.transform.localScale *= 2f;
         float temp = caster.attackCooldown;

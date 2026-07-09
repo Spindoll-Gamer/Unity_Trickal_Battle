@@ -9,15 +9,15 @@ public class UpperGradeManager : MonoBehaviour
 
     public void GetCharacterData()
     {
-        var allHeroes = BattleDataReceiver.Instance.allCharacters;
+        var aliveMyTeam = BattleDataReceiver.Instance.aliveMyTeam;
 
         // 그냥 이 리스트 통째로 루프를 돌리면 출전한 아군 수만큼 카드가 착착 뽑힙니다!
-        foreach (CharacterData characterData in allHeroes)
+        foreach (Battle_Character battle_Character in aliveMyTeam )
         {
-            CreateUpperUI(characterData);
+            CreateUpperUI(battle_Character);
         }
     }
-    public void CreateUpperUI(CharacterData characterData)
+    public void CreateUpperUI(Battle_Character battle_Character)
     {
         GameObject upperGradeUI = Instantiate(upperGradePrefab, upperGradeUITransform);
 
@@ -26,7 +26,7 @@ public class UpperGradeManager : MonoBehaviour
         upperGradeUI.transform.localScale = Vector3.one;
         if (UPUI != null)
         {
-            UPUI.Setup(characterData);
+            UPUI.Setup(battle_Character);
         }
         
     }

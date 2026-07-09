@@ -23,7 +23,7 @@ MonoBehaviour:
   attackType: 0
   maxHP: 21522
   maxSP: 370
-  regenSP: 0
+  regenSP: 15
   attack_Power: 2394
   defence_Power: 3672
   critical_Probability: 50

@@ -21,16 +21,14 @@ public class KomiNormalAttack : SkillAction
         if (dice <= strongChance)
         {
             //  강하게 내려치기 발동!
-            //float damage = caster.MyData.attack_Power * strongDamageMultiplier;
-            float damage = 0;
+            float damage = caster.MyData.attack_Power * strongDamageMultiplier;
             target.TakeDamage(damage);
             // 여기에 화면 흔들림(Camera Shake)이나 큰 이펙트 펑!
         }
         else
         {
             // 일반 평타
-            //float damage = caster.MyData.attack_Power;
-            float damage = 0f;
+            float damage = caster.MyData.attack_Power;
             target.TakeDamage(damage);
         }
     }

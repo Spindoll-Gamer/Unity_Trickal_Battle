@@ -15,16 +15,18 @@ public class UpperGradeUI : MonoBehaviour
     [SerializeField] private Image coolDownImage;
     [SerializeField] private Button skillButton;
     [SerializeField] private TextMeshProUGUI cooldownTimer;
+    [SerializeField] private Slider hpSlider;
 
     public CharacterData cardData {get; private set;}
     private float characterCooldownTime;
     private float currentCooldownTime;
     private bool isCooldown = true;
     private Battle_Character myCharacter;
-    public void Setup(CharacterData data)
+    public void Setup(Battle_Character battle_Character)
     {
+        myCharacter = battle_Character;
+        CharacterData data = myCharacter.MyData;
         cardData = data;
-        myCharacter = FindMyCharacterFromReceiver(data);
         Image buttonImage = skillButton.GetComponent<Image>();
         buttonImage.sprite = data.upperGradeSprite;
         characterCooldownTime = data.cooldownTime;
@@ -32,6 +34,8 @@ public class UpperGradeUI : MonoBehaviour
         coolDownImage.fillAmount = 1f;
         skillButton.onClick.RemoveAllListeners();
         skillButton.onClick.AddListener(OnSkillButtonClick);
+        hpSlider.maxValue = myCharacter.MyData.maxHP;
+        hpSlider.value = myCharacter.currentHp;
     }
     public void Update()
     {
@@ -55,22 +59,8 @@ public class UpperGradeUI : MonoBehaviour
 
             }
         }
+        hpSlider.value = myCharacter.currentHp;
     }
-    private Battle_Character FindMyCharacterFromReceiver(CharacterData data)
-    {
-        var allBattleCharacters = BattleDataReceiver.Instance.allBattleCharacters;
-
-        foreach (Battle_Character battleCharacter in allBattleCharacters)
-        {
-            if (battleCharacter.MyData == data)
-            {
-                return battleCharacter;
-            }
-        }
-
-        return null;
-    }
-
     private void OnSkillButtonClick()
     {
         if (isCooldown) return;
@@ -89,4 +79,5 @@ public class UpperGradeUI : MonoBehaviour
         isCooldown = true;
         cooldownTimer.enabled = true;
     }
+
 }

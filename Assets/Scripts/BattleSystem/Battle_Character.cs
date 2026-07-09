@@ -65,7 +65,6 @@ public class Battle_Character : MonoBehaviour
         sr.transform.localPosition = new Vector3(-0.65f, 5.9f, 0f);
         sr.transform.localRotation = Quaternion.identity;
         sr.transform.localScale = new Vector3(7.0f, 7.0f, 1f);
-
         if (hpSlider != null)
         {
             hpSlider.maxValue = data.maxHP;
@@ -93,6 +92,7 @@ public class Battle_Character : MonoBehaviour
         if (currentSp >= myData.maxSP && currentState != CharacterState.SkillCasting && currentState != CharacterState.Stunned)
         {
             ChangeState(CharacterState.SkillCasting);
+            LowerGrade();
         }
 
         if (spSlider != null)
@@ -121,34 +121,6 @@ public class Battle_Character : MonoBehaviour
                     //ChangeState(CharacterState.Move);
                     //적 전멸 배틀종료
                 }
-
-                /*currentTarget = FindTarget();
-                if (currentTarget == null)
-                {
-                    //Move(); 탐색해서 적이 없을경우 이동
-                    //ChangeState(CharacterState.Move);
-                    //적 전멸 배틀종료
-                }
-                else
-                {
-
-                    if(distance > myData.attackRange)
-                    {
-                        ChangeState(CharacterState.Move);
-                    }
-                    else 
-                    {
-                        ChangeState(CharacterState.NormalAttack);
-                    }
-                    if (isSPRegenStart == false)
-                    {
-                        spRegenCoroutine = StartCoroutine(RegenSPRoutine());
-                        isSPRegenStart = true;
-                    }
-                    ChangeState(CharacterState.NormalAttack);
-
-                }*/
-
                 break;
 
             case CharacterState.Move:
@@ -205,7 +177,6 @@ public class Battle_Character : MonoBehaviour
 
             case CharacterState.SkillCasting:
                 // 스킬 시전 중에는 아무것도 안 하고 가만히 연출만 대기 (평타 차단 완벽 구현!)
-                LowerGrade(); // 저학년스킬발동
                 break;
 
             case CharacterState.Stunned:
@@ -322,9 +293,12 @@ public class Battle_Character : MonoBehaviour
     {
         if (currentState == CharacterState.Dead) return;
         currentHp -= damage;
+        Vector3 spawnPos = transform.position + new Vector3(0, 1.5f, 0);
+        Debug.Log("가져온다");
+        DamageTextPool.instance.GetFromPool(damage, spawnPos);
         if (hpSlider != null)
         {
-            hpSlider.value = currentHp;
+            HPValueChanged();
         }
 
         if (currentHp <= 0)
@@ -338,7 +312,38 @@ public class Battle_Character : MonoBehaviour
     {
         ChangeState(CharacterState.Dead);
         GetComponentInChildren<BoxCollider2D>().enabled = false;
+        this.gameObject.SetActive(false);
+        Destroy(gameObject);
+
         Debug.Log($"{myData.characterName} 사망...");
         // 사망 애니메이션이나 오브젝트 처리
+    }
+
+    public void HPValueChanged()
+    {
+        hpSlider.value = currentHp;
+    }
+
+    void OnDrawGizmos()
+    {
+        // Draw a yellow cube at the transform position
+        Gizmos.color = Color.red;
+        Vector3 startPos = transform.position;
+        Vector3 centerPos = startPos + (transform.right * (9 / 2f)) +(transform.up /2f);
+
+        // 4. 큐브의 크기 설정 (두께, 높이, 길이) 
+        // 캐릭터가 바라보는 방향에 맞추기 위해 변수를 매칭합니다.
+        Vector3 cubeSize = new Vector3(9f, 1f, 1f);
+
+        // 5. 💡 만약 캐릭터가 회전(`transform.rotation`)해도 기즈모가 완벽하게 따라 돌게 하려면 
+        // 내 로컬 좌표계를 기즈모 매트릭스에 심어주는 치트키를 씁니다.
+        Matrix4x4 rotationMatrix = Matrix4x4.TRS(centerPos, transform.rotation, Vector3.one);
+        Gizmos.matrix = rotationMatrix;
+
+        // 6. 매트릭스를 썼으므로, 위치는 Vector3.zero(중심점 위치 적용됨)로 설정하고 그립니다.
+        Gizmos.DrawWireCube(Vector3.zero, cubeSize);
+
+        // 7. 다음 기즈모들을 위해 매트릭스 리셋 (기본 매너)
+        Gizmos.matrix = Matrix4x4.identity;
     }
 }

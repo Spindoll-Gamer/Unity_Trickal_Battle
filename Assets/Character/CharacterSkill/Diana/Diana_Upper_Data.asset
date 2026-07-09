@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3353094c27599ac4bb330f7cfc66f427, type: 3}
+  m_Name: Diana_Upper_Data
+  m_EditorClassIdentifier: BattleSystem::SkillData
+  skillName: "\uC9C4\uC815\uD55C \uCE58\uB8CC\uBC95 "
+  description: "\uC815\uBA74\uC73C\uB85C \uAE30\uC758 \uACA9\uB958\uB97C \uBC1C\uC0B0\uD574
+    \uC801\uC5D0\uAC8C 11\uD68C \uBC94\uC704 \uB9C8\uBC95 \uD53C\uD574\uB97C \uC785\uD788\uBA70,
+    \uB109\uBC31\uC2DC\uD0A8\uB2E4.\r\n\uB109\uBC31: \uD589\uB3D9\uBD88\uAC00 \uC0C1\uD0DC\uB85C
+    \uB4A4\uB85C \uBC00\uB9B0\uB2E4."
+  skillAction: {fileID: 11400000, guid: db1745a8a059f3e428c7259ae926063c, type: 2}

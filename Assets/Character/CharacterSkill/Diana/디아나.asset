@@ -21,18 +21,15 @@ MonoBehaviour:
   positionRow: 1
   unitRole: 2
   attackType: 1
-  maxHP: 21522
-  currentHP: 0
-  maxSP: 370
-  currentSP: 0
-  regenSP: 0
-  physical_Attack_Power: 2394
-  physical_Defence_Power: 3672
-  magical_Attack_Power: 0
-  magical_Defence_Power: 2557
+  maxHP: 17859
+  maxSP: 400
+  regenSP: 20
+  attack_Power: 1764
+  defence_Power: 3307
   critical_Probability: 50
   critical_Multiplier: 1
-  attackRange: 0
-  normalAttack: {fileID: 0}
-  lowerSkill: {fileID: 0}
-  upperSkill: {fileID: 0}
+  attackRange: 3
+  normalAttack: {fileID: 11400000, guid: 6245d3b704f664d4989fd5f37d2641d6, type: 2}
+  lowerSkill: {fileID: 11400000, guid: a4c6d6a0811f14a4386140813a591acf, type: 2}
+  upperSkill: {fileID: 11400000, guid: 7a5789e97170b584787fb4f5884f1ecf, type: 2}
+  cooldownTime: 32

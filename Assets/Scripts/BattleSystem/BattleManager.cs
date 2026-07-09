@@ -46,9 +46,16 @@ public class BattleManager : MonoBehaviour
     {
         // 전투 씬이 시작되자마자 팀을 스폰합니다.
         SpawnMyTeam();
+        SpawnEnemyTeam();
+        BattleDataReceiver.Instance.aliveMyTeam = this.aliveMyTeam;
+        BattleDataReceiver.Instance.aliveEnemyTeam = this.aliveEnemyTeam;
         upperGradeManager.GetCharacterData();
     }
 
+    public void Update()
+    {
+        HurtAllCharacter();
+    }
     private void SpawnMyTeam()
     {
         if (BattleDataReceiver.Instance == null)
@@ -63,16 +70,14 @@ public class BattleManager : MonoBehaviour
         SpawnLine(BattleDataReceiver.Instance.middleLine, middleSpawnPoints);
         // 3. 후열 스폰
         SpawnLine(BattleDataReceiver.Instance.backLine, backSpawnPoints);
+    }
 
-        Debug.Log($"총 {activeAllies.Count}마리의 아군 캐릭터가 전투 필드에 배치되었습니다!");
 
-        // 4. 여기서부터 이제 "전투 시작!" 루틴이나 턴제 타이머를 돌리면 됩니다.
-
+    private void SpawnEnemyTeam()
+    {
         EnemySpawnLine(this.eFrontLine, eFrontSpawnPoints);
         EnemySpawnLine(this.eMiddleLine, eMiddleSpawnPoints);
         EnemySpawnLine(this.eBackLine, eBackSpawnPoints);
-        
-        
     }
 
     private void SpawnLine(CharacterData[] lineData, GameObject[] spawnPoints)
@@ -91,7 +96,6 @@ public class BattleManager : MonoBehaviour
             {
                 battleChar.Init(lineData[i],true); // 네르, 엘레나 등의 순수 스탯/스프라이트 데이터 주입
                 aliveMyTeam.Add(battleChar);
-                BattleDataReceiver.Instance.allBattleCharacters.Add(battleChar);
             }
         }
     }
@@ -122,4 +126,14 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    public void HurtAllCharacter()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            foreach (Battle_Character character in aliveMyTeam)
+            {
+                character.TakeDamage(10000);
+            }
+        }
+    }
 }

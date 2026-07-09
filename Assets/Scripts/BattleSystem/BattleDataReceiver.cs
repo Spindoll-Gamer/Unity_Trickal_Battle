@@ -12,8 +12,11 @@ public class BattleDataReceiver : MonoBehaviour
     public CharacterData[] frontLine = new CharacterData[3];
     public CharacterData[] middleLine = new CharacterData[3];
     public CharacterData[] backLine = new CharacterData[3];
-    public List<CharacterData> allCharacters = new List<CharacterData>();
-    public List<Battle_Character> allBattleCharacters = new List<Battle_Character>();
+    
+    public List<Battle_Character> aliveMyTeam { get; set; }
+    public List<Battle_Character> aliveEnemyTeam { get; set; }
+
+
     private void Awake()
     {
         if (Instance == null)
@@ -35,14 +38,14 @@ public class BattleDataReceiver : MonoBehaviour
         middleLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Mid).placedCharacters.Clone();
         backLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Back).placedCharacters.Clone();
 
-        allCharacters.Clear(); // 혹시 이전 데이터가 남아있을 수 있으니 깔끔하게 비워줍니다.
+        //allCharacters.Clear(); // 혹시 이전 데이터가 남아있을 수 있으니 깔끔하게 비워줍니다.
 
-        AddCharactersFromLine(frontLine);
-        AddCharactersFromLine(middleLine);
-        AddCharactersFromLine(backLine);
+        //AddCharactersFromLine(frontLine);
+        //AddCharactersFromLine(middleLine);
+        //AddCharactersFromLine(backLine);
     }
 
-    private void AddCharactersFromLine(CharacterData[] line)
+    /*private void AddCharactersFromLine(CharacterData[] line)
     {
         if (line == null) return;
 
@@ -54,5 +57,5 @@ public class BattleDataReceiver : MonoBehaviour
                 allCharacters.Add(line[i]);
             }
         }
-    }
+    }*/
 }

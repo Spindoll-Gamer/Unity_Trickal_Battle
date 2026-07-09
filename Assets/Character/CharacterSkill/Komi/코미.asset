@@ -23,7 +23,6 @@ MonoBehaviour:
   attackType: 0
   maxHP: 51324
   maxSP: 370
-  currentSP: 76
   regenSP: 19
   attack_Power: 100
   defence_Power: 4951
@@ -33,4 +32,4 @@ MonoBehaviour:
   normalAttack: {fileID: 11400000, guid: 5b7c75cbc0f1a824da695d94f4afc62a, type: 2}
   lowerSkill: {fileID: 11400000, guid: 6649923859bd45748963774bf0a30038, type: 2}
   upperSkill: {fileID: 11400000, guid: d74aa2df54662ef4398efcee9e798b4d, type: 2}
-  cooldownTime: 56
+  cooldownTime: 3
