@@ -1598,8 +1598,18 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  allCharacter: []
-  allBattleCharacter: []
+  eFrontLine:
+  - {fileID: 11400000, guid: be40cda8f23fa1c47bf32e5da55f9169, type: 2}
+  - {fileID: 11400000, guid: 4946d7c8cf104d24ca56323397a3f9da, type: 2}
+  - {fileID: 11400000, guid: b8eccd8269b10ae4a824d569029f4159, type: 2}
+  eMiddleLine:
+  - {fileID: 11400000, guid: 150c7a2f75b94e84c8b9c4babd313a42, type: 2}
+  - {fileID: 11400000, guid: 1ca2cf45c9892784bbaa8f4306b0e4a9, type: 2}
+  - {fileID: 11400000, guid: 026a91dc123754d4cbcd884ab9c956d6, type: 2}
+  eBackLine:
+  - {fileID: 11400000, guid: 74c546e68d62e4f4489fd9e7a4b3706f, type: 2}
+  - {fileID: 11400000, guid: d87230199afb9014fba4ee65a2b7bde7, type: 2}
+  - {fileID: 11400000, guid: aeac27bae11eacb479a502f711c4db45, type: 2}
 --- !u!4 &1699954942
 Transform:
   m_ObjectHideFlags: 0
@@ -1672,10 +1682,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: "\uC774\uAE30\uB7EC \uAC04\uB2E4\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: bddb888f09113c14c9f776d5c59c81d8, type: 2}
+  m_sharedMaterial: {fileID: 6270555877900566690, guid: bddb888f09113c14c9f776d5c59c81d8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

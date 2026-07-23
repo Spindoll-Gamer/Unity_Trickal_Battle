@@ -7,7 +7,7 @@ public class DamageTextPool : MonoBehaviour
     public int initialCount = 20; // 처음에 미리 만들어둘 개수
     public Transform canvasTransform;
 
-    public static DamageTextPool instance { get; private set; }
+    public static DamageTextPool Instance { get; private set; }
 
     // 핵심 자료구조: 큐(Queue)
     // FIFO(먼저 들어온 놈이 먼저 나감) 성질이 재사용에 적합합니다.
@@ -15,9 +15,9 @@ public class DamageTextPool : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
 
         }
         else
@@ -49,7 +49,6 @@ public class DamageTextPool : MonoBehaviour
         DamageText obj = pool.Dequeue();
         obj.transform.position = position;
         obj.gameObject.SetActive(true);
-        Debug.Log("셋업준비완료");
         obj.Setup(damage, this);
     }
 
@@ -58,5 +57,14 @@ public class DamageTextPool : MonoBehaviour
     {
         obj.gameObject.SetActive(false);
         pool.Enqueue(obj);
+    }
+
+    public void ReturnAllToPool()
+    {
+        foreach (var obj in pool)
+        {
+            if( obj.gameObject.activeSelf)
+            { obj.gameObject.SetActive(false); }
+        }
     }
 }

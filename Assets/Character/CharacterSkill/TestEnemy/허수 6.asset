@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86da1c3804ab30c42bfc4276123f1d92, type: 3}
+  m_Name: "\uD5C8\uC218 6"
+  m_EditorClassIdentifier: BattleSystem::CharacterData
+  characterID: 999
+  characterName: "\uD5C8\uC218\uC544\uBE44"
+  iconSprite: {fileID: 6523032932782590251, guid: e4652046b8ca6a340ac9c4ac0a390674, type: 3}
+  portraitSprite: {fileID: 7322326269270613102, guid: 4ab2a216445f511429e4eb4bf72a3c27, type: 3}
+  upperGradeSprite: {fileID: 0}
+  elementType: 4
+  positionRow: 2
+  unitRole: 1
+  attackType: 0
+  maxHP: 10000
+  maxSP: 999999
+  regenSP: 19
+  attack_Power: 0
+  defence_Power: 0
+  critical_Probability: 50
+  critical_Multiplier: 1
+  attackRange: 5.5
+  normalAttack: {fileID: 11400000, guid: 92145c47cd5941b489bb2ef5ff46caa9, type: 2}
+  lowerSkill: {fileID: 11400000, guid: 995ba22daa7ff6d45a2b9c69f091635d, type: 2}
+  upperSkill: {fileID: 0}
+  cooldownTime: 0

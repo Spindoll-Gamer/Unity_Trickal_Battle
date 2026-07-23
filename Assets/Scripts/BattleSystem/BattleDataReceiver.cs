@@ -12,10 +12,20 @@ public class BattleDataReceiver : MonoBehaviour
     public CharacterData[] frontLine = new CharacterData[3];
     public CharacterData[] middleLine = new CharacterData[3];
     public CharacterData[] backLine = new CharacterData[3];
-    
-    public List<Battle_Character> aliveMyTeam { get; set; }
-    public List<Battle_Character> aliveEnemyTeam { get; set; }
 
+    public CharacterData[] eFrontLine = new CharacterData[3];
+    public CharacterData[] eMiddleLine = new CharacterData[3];
+    public CharacterData[] eBackLine = new CharacterData[3];
+
+    public List<Battle_Character> aliveMyTeam
+    {
+        get => BattleManager.Instance.aliveMyTeam;
+    }
+
+    public List<Battle_Character> aliveEnemyTeam
+    {
+        get => BattleManager.Instance.aliveEnemyTeam;
+    }
 
     private void Awake()
     {
@@ -38,6 +48,9 @@ public class BattleDataReceiver : MonoBehaviour
         middleLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Mid).placedCharacters.Clone();
         backLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Back).placedCharacters.Clone();
 
+        //eFrontLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Front).placedCharacters.Clone();
+        //eMiddleLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Mid).placedCharacters.Clone();
+        //eBackLine = (CharacterData[])manager.slotGroups.Find(g => g.positionType == PositionRow.Back).placedCharacters.Clone();
         //allCharacters.Clear(); // 혹시 이전 데이터가 남아있을 수 있으니 깔끔하게 비워줍니다.
 
         //AddCharactersFromLine(frontLine);

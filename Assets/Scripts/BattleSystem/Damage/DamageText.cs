@@ -10,7 +10,6 @@ public class DamageText : MonoBehaviour
     public void Setup(float damage, DamageTextPool sourcePool)
     {
         pool = sourcePool;
-        Debug.Log("댐이지" + damage);
         // 숫자를 <sprite name="1"> 형태로 변환
         string damageStr = ((int)damage).ToString();
         string spriteText = "";

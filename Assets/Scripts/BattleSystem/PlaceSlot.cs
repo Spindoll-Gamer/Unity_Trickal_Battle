@@ -8,12 +8,6 @@ public class PlaceSlot : MonoBehaviour
     private GameObject currentSpriteObj;
     public CharacterData occupiedCharacter { get; private set; }
     
-
-    public void SetEmpty()
-    {
-        
-    }
-
     public void SetCharacter(CharacterData newCharacter, int sortingLayer)
     {
 

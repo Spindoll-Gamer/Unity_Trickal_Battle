@@ -28,8 +28,10 @@ public class Battle_Character : MonoBehaviour
 
     [Header("전투 실시간 상태")]
     public float currentHp;
+    public float maxHp;
     public float currentSp;
-    public float attackCooldown = 1.5f; // 평타 주기 (초)
+    public float maxSp;
+    public float attackCooldown = 1.5f;
     public float regenSP;
     public int attack_Power;
     public int defence_Power;
@@ -41,7 +43,6 @@ public class Battle_Character : MonoBehaviour
     public enum TeamType { PlayerA, PlayerB }
     public TeamType myTeam;
 
-
     SpriteRenderer spriteRenderer;
     Battle_Character currentTarget;
     Rigidbody2D rb;
@@ -51,16 +52,16 @@ public class Battle_Character : MonoBehaviour
     private Coroutine spRegenCoroutine;
 
     // BattleManager가 소환 후 데이터를 넣어주는 함수
-    public void Init(CharacterData data, bool flip)
+    public void Init(CharacterData data, TeamType team)
     {
         myData = data;
         currentHp = data.maxHP;
         rb = GetComponent<Rigidbody2D>();
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         currentSp = 0;
-        // 소환되자마자 바로 때리는 걸 방지하기 위해 랜덤 딜레이를 살짝 줍니다.
-        lastAttackTime = Time.time + Random.Range(0f, 0.5f);
+        lastAttackTime = Time.time + 0.2f;
         sr.sprite = myData.portraitSprite;
-        sr.flipX = flip;
+        sr.flipX = (team == TeamType.PlayerA) ? true : false;
         sr.sortingOrder = 1;
         sr.transform.localPosition = new Vector3(-0.65f, 5.9f, 0f);
         sr.transform.localRotation = Quaternion.identity;
@@ -77,7 +78,8 @@ public class Battle_Character : MonoBehaviour
         }
 
 
-
+        maxHp = data.maxHP;
+        maxSp = data.maxSP;
         regenSP = myData.regenSP;
         attack_Power = myData.attack_Power;
         defence_Power = myData.defence_Power;
@@ -95,15 +97,22 @@ public class Battle_Character : MonoBehaviour
             LowerGrade();
         }
 
+        if ((currentState == CharacterState.Idle || currentState == CharacterState.NormalAttack) && currentTarget != null)
+        {
+            distance = Vector3.Distance(transform.position, currentTarget.transform.position);
+            if (distance > myData.attackRange)
+            {
+                ChangeState(CharacterState.Move);
+            }
+        }
+
         if (spSlider != null)
         {
             spSlider.value = currentSp;
         }
-        // ★ 현재 상태에 따라 기계적으로 딱 자기 할 일만 시킵니다!
         switch (currentState)
         {
             case CharacterState.Idle:
-                // 적이 있는지 탐색하고, 사거리를 체크해서 이동할지 공격할지 결정
                 currentTarget = FindTarget();
                 if (currentTarget != null)
                 {
@@ -117,9 +126,6 @@ public class Battle_Character : MonoBehaviour
                         
                         ChangeState(CharacterState.NormalAttack);
                     }
-                    //Move(); 탐색해서 적이 없을경우 이동
-                    //ChangeState(CharacterState.Move);
-                    //적 전멸 배틀종료
                 }
                 break;
 
@@ -222,7 +228,6 @@ public class Battle_Character : MonoBehaviour
         }
     }
 
-
     private void NormalAttack(Battle_Character currentTarget)
     {
         if (currentTarget != null)
@@ -236,25 +241,20 @@ public class Battle_Character : MonoBehaviour
         }
     }
 
-
     public Battle_Character FindTarget()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
         Battle_Character closestEnemy = null;
         float closestDistance = Mathf.Infinity; // 비교를 위해 처음엔 무한대 값으로 설정
         Vector3 currentPosition = transform.position;
-
-        foreach (GameObject enemy in enemies)
+        var enemyTeam = (this.myTeam == TeamType.PlayerA) ? BattleDataReceiver.Instance.aliveEnemyTeam : BattleDataReceiver.Instance.aliveMyTeam;
+        foreach (Battle_Character enemyChar in enemyTeam)
         {
-            Battle_Character enemyChar = enemy.GetComponent<Battle_Character>();
-
+            if (enemyChar == null) continue;
             // 살아있는 적만 검사
-            if (enemyChar != null && enemyChar.currentState != CharacterState.Dead)
+            if (enemyChar.currentState != CharacterState.Dead)
             {
                 // 나와 이 적 사이의 거리를 계산 (제곱 거리를 쓰면 루트 계산이 빠져서 성능에 더 좋습니다)
-                float distanceToEnemy = (enemy.transform.position - currentPosition).sqrMagnitude;
-                // 방금 검사한 적이 기존에 찾은 적보다 더 가깝다면?
+                float distanceToEnemy = (enemyChar.transform.position - currentPosition).sqrMagnitude;
                 if (distanceToEnemy < closestDistance)
                 {
                     closestDistance = distanceToEnemy; // 가장 짧은 거리 갱신
@@ -294,8 +294,7 @@ public class Battle_Character : MonoBehaviour
         if (currentState == CharacterState.Dead) return;
         currentHp -= damage;
         Vector3 spawnPos = transform.position + new Vector3(0, 1.5f, 0);
-        Debug.Log("가져온다");
-        DamageTextPool.instance.GetFromPool(damage, spawnPos);
+        DamageTextPool.Instance.GetFromPool(damage, spawnPos);
         if (hpSlider != null)
         {
             HPValueChanged();
@@ -304,6 +303,7 @@ public class Battle_Character : MonoBehaviour
         if (currentHp <= 0)
         {
             currentHp = 0;
+            HPValueChanged();
             WeekendFarm();
         }
     }
@@ -312,9 +312,13 @@ public class Battle_Character : MonoBehaviour
     {
         ChangeState(CharacterState.Dead);
         GetComponentInChildren<BoxCollider2D>().enabled = false;
+        if(BattleManager.Instance != null)
+        {
+            BattleManager.Instance.RemoveCharacter(this);
+        }
+        
         this.gameObject.SetActive(false);
         Destroy(gameObject);
-
         Debug.Log($"{myData.characterName} 사망...");
         // 사망 애니메이션이나 오브젝트 처리
     }
